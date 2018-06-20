@@ -31,7 +31,7 @@ f_new_2021 <- function(x) {
         bruto <- x*1.289
         DVK <- bruto*1.0124
         npd <- pmax(NPD - NPD_coef*pmax(0,(bruto - MMA)),0)
-        lubos <- 5*1.289*VDU
+        lubos <- 5*VDU
         mok_baz <- pmax(0,(bruto-npd))
         gpm <- ifelse(bruto<=lubos, mok_baz*GPM_1, lubos *GPM_1+(bruto-lubos)*GPM_2) 
         sodra <- pmin(pmax(bruto*SODRA, MMA*SODRA), lubos * SODRA)
@@ -48,7 +48,7 @@ f_new_2020 <- function(x) {
         bruto <- x*1.289
         DVK <- bruto*1.0124
         npd <- pmax(NPD - NPD_coef*pmax(0,(bruto - MMA)),0)
-        lubos <- 7*1.289*VDU
+        lubos <- 7*VDU
         mok_baz <- pmax(0,(bruto-npd))
         gpm <- ifelse(bruto<=lubos, mok_baz*GPM_1, lubos *GPM_1+(bruto-lubos)*GPM_2) 
         sodra <- pmin(pmax(bruto*SODRA, MMA*SODRA), lubos * SODRA)
@@ -65,7 +65,7 @@ f_new_2019 <- function(x) {
         bruto <- x*1.289
         DVK <- bruto*1.0124
         npd <- pmax(NPD - NPD_coef*pmax(0,(bruto - MMA)),0)
-        lubos <- 10*1.289*VDU
+        lubos <- 10*VDU
         mok_baz <- pmax(0,(bruto-npd))
         gpm <- ifelse(bruto<=lubos, mok_baz*GPM_1, lubos *GPM_1+(bruto-lubos)*GPM_2) 
         sodra <- pmin(pmax(bruto*SODRA, MMA*SODRA), lubos * SODRA)
@@ -133,7 +133,7 @@ df <- data.frame(bruto=df_2018$bruto,
 df$ID <- seq.int(nrow(df))
 df <- df %>% gather(var, values,2:5)
 
-jpeg(".figures/neto.jpeg", width = 9, height = 5, units = 'in', res = 600)
+jpeg("./figures/neto.jpeg", width = 9, height = 5, units = 'in', res = 600)
 neto <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,15000, by=1000))+
@@ -158,13 +158,13 @@ df_2019 <- f_new_2019(x)
 df_2020 <- f_new_2020(x)
 df_2021 <- f_new_2021(x)
 df <- data.frame(bruto=df_2018$bruto,
-                 VSD_2018=df_2018$sodra_2018,
-                 VSD_2019=df_2019$sodra_2019,
-                 VSD_2020=df_2020$sodra_2020,
-                 VSD_2021=df_2021$sodra_2021)
+                 ITR_2018=df_2018$sodra_2018,
+                 ITR_2019=df_2019$sodra_2019,
+                 ITR_2020=df_2020$sodra_2020,
+                 ITR_2021=df_2021$sodra_2021)
 df <- df %>% gather(var, values,2:5)
 
-jpeg(".figures/sodra.jpeg", width = 9, height = 5, units = 'in', res = 600)
+jpeg("./figures/sodra.jpeg", width = 9, height = 5, units = 'in', res = 600)
 sodra <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,15000, by=1000))+
@@ -189,13 +189,13 @@ df_2019 <- f_new_2019(x)
 df_2020 <- f_new_2020(x)
 df_2021 <- f_new_2021(x)
 df <- data.frame(bruto=df_2018$bruto,
-                 GPM_2018=df_2018$gpm_2018,
-                 GPM_2019=df_2019$gpm_2019,
-                 GPM_2020=df_2020$gpm_2020,
-                 GPM_2021=df_2021$gpm_2021)
+                 ITR_2018=df_2018$gpm_2018,
+                 ITR_2019=df_2019$gpm_2019,
+                 ITR_2020=df_2020$gpm_2020,
+                 ITR_2021=df_2021$gpm_2021)
 df <- df %>% gather(var, values,2:5)
 
-jpeg(".figures/gpm.jpeg", width = 9, height = 5, units = 'in', res = 600)
+jpeg("./figures/gpm.jpeg", width = 9, height = 5, units = 'in', res = 600)
 gpm <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,15000, by=1000))+
@@ -213,7 +213,7 @@ gpm <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
 gpm
 dev.off()
 
-jpeg("/home/pc/Dropbox/BLOG/2018_04_30_mokesčių_reformos_vertinimas/figures/all.jpeg", width = 9, height = 6, units = 'in', res = 600)
+jpeg("./figures/all.jpeg", width = 9, height = 6, units = 'in', res = 600)
 grid.arrange(gpm, sodra, neto, itr, ncol=2, top=textGrob("Mokesčių reformos pasekmės 2018-2021", gp=gpar(fontsize=15,font=8)))
 dev.off()
 
