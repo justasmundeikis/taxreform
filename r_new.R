@@ -8,9 +8,7 @@ library(gridExtra)
 library(grid)
 library(ineq)
 
-# http://finmin.lrv.lt/uploads/finmin/documents/files/LT_ver/%C5%BDiniasklaida/Konsultacinis_MPD_04_17_final.pdf
-# http://finmin.lrv.lt/lt/aktualus-valstybes-finansu-duomenys/ekonomines-raidos-scenarijus
-# https://www.delfi.lt/verslas/verslas/infografikas-kaip-ir-kam-keisis-mokesciu-nasta.d?id=77745685
+# https://www.facebook.com/photo.php?fbid=486258678490272&set=p.486258678490272&type=3&theater 2 variantas
 
 # reading in income data 2018-04
 data <- read.csv("apdraustuju_pajamu_analize.csv",
@@ -33,10 +31,10 @@ f_new_2021 <- function(x) {
         bruto <- x*1.289
         DVK <- bruto*1.0124
         npd <- pmax(NPD - NPD_coef*pmax(0,(bruto - MMA)),0)
-        lubos <- 5*1.289*VDU
+        lubos <- 5*VDU
         mok_baz <- pmax(0,(bruto-npd))
         gpm <- ifelse(bruto<=lubos, mok_baz*GPM_1, lubos *GPM_1+(bruto-lubos)*GPM_2) 
-        sodra <- pmax(bruto*SODRA, MMA*SODRA)
+        sodra <- pmin(pmax(bruto*SODRA, MMA*SODRA), lubos * SODRA)
         db <- bruto*0.0124
         neto <- bruto - gpm - sodra
         list(bruto=x, new_bruto_2021=bruto, npd_2021=npd, gpm_2021 = gpm, sodra_2021 = sodra+db, neto_2021 = neto, ITR_2021=((DVK-neto)/DVK), tax_2021=(DVK-neto))
@@ -50,10 +48,10 @@ f_new_2020 <- function(x) {
         bruto <- x*1.289
         DVK <- bruto*1.0124
         npd <- pmax(NPD - NPD_coef*pmax(0,(bruto - MMA)),0)
-        lubos <- 7*1.289*VDU
+        lubos <- 7*VDU
         mok_baz <- pmax(0,(bruto-npd))
         gpm <- ifelse(bruto<=lubos, mok_baz*GPM_1, lubos *GPM_1+(bruto-lubos)*GPM_2) 
-        sodra <- pmax(bruto*SODRA, MMA*SODRA)
+        sodra <- pmin(pmax(bruto*SODRA, MMA*SODRA), lubos * SODRA)
         db <- bruto*0.0124
         neto <- bruto - gpm - sodra
         list(bruto=x, new_bruto_2020=bruto, npd_2020=npd, gpm_2020 = gpm, sodra_2020 = sodra+db, neto_2020 = neto, ITR_2020=((DVK-neto)/DVK), tax_2020=(DVK-neto))
@@ -67,10 +65,10 @@ f_new_2019 <- function(x) {
         bruto <- x*1.289
         DVK <- bruto*1.0124
         npd <- pmax(NPD - NPD_coef*pmax(0,(bruto - MMA)),0)
-        lubos <- 10*1.289*VDU
+        lubos <- 10*VDU
         mok_baz <- pmax(0,(bruto-npd))
         gpm <- ifelse(bruto<=lubos, mok_baz*GPM_1, lubos *GPM_1+(bruto-lubos)*GPM_2) 
-        sodra <- pmax(bruto*SODRA, MMA*SODRA)
+        sodra <- pmin(pmax(bruto*SODRA, MMA*SODRA), lubos * SODRA)
         db <- bruto*0.0124
         neto <- bruto - gpm - sodra
         list(bruto=x, new_bruto_2019=bruto, npd_2019=npd, gpm_2019 = gpm, sodra_2019 = sodra+db, neto_2019 = neto, ITR_2019=((DVK-neto)/DVK), tax_2019=(DVK-neto))
@@ -104,7 +102,7 @@ df <- data.frame(bruto=df_2018$bruto,
                  ITR_2021=df_2021$ITR_2021)
 df <- df %>% gather(var, values,2:5)
 
-jpeg(".figures/ITR_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
+jpeg("./figures/ITR_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
 itr <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,20000, by=1000))+
@@ -135,7 +133,7 @@ df <- data.frame(bruto=df_2018$bruto,
 df$ID <- seq.int(nrow(df))
 df <- df %>% gather(var, values,2:5)
 
-jpeg(".figures/neto_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
+jpeg("./figures/neto_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
 neto <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,15000, by=1000))+
@@ -166,7 +164,7 @@ df <- data.frame(bruto=df_2018$bruto,
                  VSD_2021=df_2021$sodra_2021)
 df <- df %>% gather(var, values,2:5)
 
-jpeg(".figures/sodra_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
+jpeg("./figures/sodra_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
 sodra <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,15000, by=1000))+
@@ -197,7 +195,7 @@ df <- data.frame(bruto=df_2018$bruto,
                  GPM_2021=df_2021$gpm_2021)
 df <- df %>% gather(var, values,2:5)
 
-jpeg(".figures/gpm_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
+jpeg("./figures/gpm_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
 gpm <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,15000, by=1000))+
@@ -215,7 +213,7 @@ gpm <- ggplot(data=df, aes(x=bruto,y=values, color=var))+
 gpm
 dev.off()
 
-jpeg(".figures/all_new.jpeg", width = 9, height = 6, units = 'in', res = 600)
+jpeg("./figures/all_new.jpeg", width = 9, height = 6, units = 'in', res = 600)
 grid.arrange(gpm, sodra, neto, itr, ncol=2, top=textGrob("Mokesčių reformos pasekmės 2018-2021", gp=gpar(fontsize=15,font=8)))
 dev.off()
 
