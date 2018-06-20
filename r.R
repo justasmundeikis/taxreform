@@ -158,10 +158,10 @@ df_2019 <- f_new_2019(x)
 df_2020 <- f_new_2020(x)
 df_2021 <- f_new_2021(x)
 df <- data.frame(bruto=df_2018$bruto,
-                 ITR_2018=df_2018$sodra_2018,
-                 ITR_2019=df_2019$sodra_2019,
-                 ITR_2020=df_2020$sodra_2020,
-                 ITR_2021=df_2021$sodra_2021)
+                 VSD_2018=df_2018$sodra_2018,
+                 VSD_2019=df_2019$sodra_2019,
+                 VSD_2020=df_2020$sodra_2020,
+                 VSD_2021=df_2021$sodra_2021)
 df <- df %>% gather(var, values,2:5)
 
 jpeg(".figures/sodra.jpeg", width = 9, height = 5, units = 'in', res = 600)
@@ -189,10 +189,10 @@ df_2019 <- f_new_2019(x)
 df_2020 <- f_new_2020(x)
 df_2021 <- f_new_2021(x)
 df <- data.frame(bruto=df_2018$bruto,
-                 ITR_2018=df_2018$gpm_2018,
-                 ITR_2019=df_2019$gpm_2019,
-                 ITR_2020=df_2020$gpm_2020,
-                 ITR_2021=df_2021$gpm_2021)
+                 GPM_2018=df_2018$gpm_2018,
+                 GPM_2019=df_2019$gpm_2019,
+                 GPM_2020=df_2020$gpm_2020,
+                 GPM_2021=df_2021$gpm_2021)
 df <- df %>% gather(var, values,2:5)
 
 jpeg(".figures/gpm.jpeg", width = 9, height = 5, units = 'in', res = 600)
