@@ -1,5 +1,4 @@
-#Last update: 2018-06-23
-
+#Last update: 2018-06-28
 
 # Loading or installing missing packages
 if(!require(tidyverse)){
@@ -23,8 +22,6 @@ if(!require(ineq)){
 }
 
 
-# https://www.facebook.com/photo.php?fbid=486258678490272&set=p.486258678490272&type=3&theater 2 variantas
-
 # reading in income data 2018-04
 data <- read.csv("apdraustuju_pajamu_analize.csv",
                  sep=";",
@@ -36,7 +33,7 @@ data <- read.csv("apdraustuju_pajamu_analize.csv",
 # global variables
 GPM_1 <- 0.20
 GPM_2 <- 0.27
-PSD <- 0.06975
+PSD <- 0.0698
 
 # Sodra 
 SODRA <- 0.195 - PSD
@@ -44,7 +41,7 @@ SODRA <- 0.195 - PSD
 f_2021 <- function(x){
         MMA <- 600
         NPD <- 500
-        NPD_coef <- 0.17
+        NPD_coef <- 0.23
         VDU <- 1068.8*1.289
         bruto <- x*1.289
         lubos <- 5*VDU
@@ -59,10 +56,11 @@ f_2021 <- function(x){
         list(bruto=x, new_bruto_2021=bruto, npd_2021=npd, gpm_2021 = gpm, sodra_2021 = sodra+db+psd, neto_2021 = neto, ITR_2021=((DVK-neto)/DVK), tax_2021=(DVK-neto))
 } 
 
+
 f_2020 <- function(x) {
         MMA <- 582
         NPD <- 400
-        NPD_coef <- 0.17
+        NPD_coef <- 0.2
         VDU <- 1008.4*1.289
         bruto <- x*1.289
         lubos <- 7*VDU
@@ -125,12 +123,11 @@ f_2018 <- function(x) {
 x <- seq(200, 15000, by=10)
 
 #====================== ITR
-x <- seq(200, 15000, by=10)
 df <- data.frame(bruto=f_2018(x)$bruto,
                  ITR_2018=f_2018(x)$ITR_2018,
                  ITR_2019=f_2019(x)$ITR_2019,
                  ITR_2020=f_2020(x)$ITR_2020,
-                 ITR_2021=f_2021(x)$ITR_2021) %>%
+                 ITR_2021=f_2021(x)$ITR_2021)%>%
         gather(var, values,2:5)
 
 jpeg("./figures/ITR_new.jpeg", width = 9, height = 5, units = 'in', res = 600)
@@ -253,6 +250,8 @@ tax_loss <- data.frame(
         tax_2020=f_2020(data$Mėnesio.pajamos)$tax_2020 - f_2018(data$Mėnesio.pajamos)$tax_2018,
         tax_2021=f_2021(data$Mėnesio.pajamos)$tax_2021 - f_2018(data$Mėnesio.pajamos)$tax_2018) %>% 
         summarise_all(funs(sum))*12/1000000
+
+tax_loss <- tax_loss %>% mutate(BASELINE=tax_2019+tax_2020+tax_2021)
 tax_loss 
 #====================== Wage inequality calculation based on SODRA data set
 
@@ -266,14 +265,14 @@ ineq(f_2021(data$Mėnesio.pajamos)$neto_2021)
 #====================== Net benefit from tax reform
 net_d <- data.frame(
         bruto_2018=f_2018(data$Mėnesio.pajamos)$bruto,
-        tax_2018=f_2018(data$Mėnesio.pajamos)$neto_2018,
-        tax_2021=f_2021(data$Mėnesio.pajamos)$neto_2021)
-net_d <- tax_d%>%  mutate(tax_change=round(tax_2021-tax_2018, digits=0))%>%
-        mutate(tax_change_p=round(((tax_2021/tax_2018-1)*100), digits=0)) 
+        net_2018=f_2018(data$Mėnesio.pajamos)$neto_2018,
+        net_2021=f_2021(data$Mėnesio.pajamos)$neto_2021)
+net_d <- net_d%>%  mutate(tax_change=round(net_2021-net_2018, digits=0))%>%
+        mutate(net_change_p=round(((net_2021/net_2018-1)*100), digits=0)) 
 
 #====================== charts
 jpeg("./figures/net_change_p.jpeg", width = 9, height = 6, units = 'in', res = 600)
-ggplot(data=net_d %>% filter(tax_d$bruto_2018>=200, tax_d$bruto_2018<50000), aes(x=bruto_2018, y=tax_change_p))+
+ggplot(data=net_d %>% filter(net_d$bruto_2018>=200, net_d$bruto_2018<50000), aes(x=bruto_2018, y=net_change_p))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,50000, by=1000))+
         scale_y_continuous(breaks = seq(0,15, by=1))+
