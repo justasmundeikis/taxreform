@@ -78,7 +78,7 @@ f_2019 <- function(x) {
              tax_2019=sodra+psd+gpm)
 }
 f_2019_k <- function(x) {
-        MMA <- 430*1.289
+        MMA <- 400*1.289
         VDU <- 808.7*1.289
         SODRA <- 0.195-0.069
         PSD <- 0.069
@@ -131,3 +131,4 @@ ggplot(data=df, aes(x=bruto,y=values, color=var))+
              x="Pajamos 2018m.",
              y="ITR")
 dev.off()
+
