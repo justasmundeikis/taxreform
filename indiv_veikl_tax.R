@@ -55,7 +55,7 @@ f_2018_k <- function(x) {
 }
 
 f_2019 <- function(x) {
-        MMA <- 430*1.289
+        MMA <- 400*1.289
         VDU <- 808.7*1.289
         SODRA <- 0.195-0.069
         PSD <- 0.069
@@ -80,7 +80,7 @@ f_2019 <- function(x) {
 f_2019_k <- function(x) {
         MMA <- 430*1.289
         VDU <- 808.7*1.289
-        SODRA <- 0.195-0.069+0.03
+        SODRA <- 0.195-0.069
         PSD <- 0.069
         bruto <- x
         tax_base <- bruto*0.7
@@ -88,17 +88,18 @@ f_2019_k <- function(x) {
         gpm <- tax_base*0.15-tax_credit
         sodra <- pmin(ifelse(tax_base<MMA, MMA*SODRA, tax_base*SODRA), 43*VDU*SODRA)
         psd <- pmin(ifelse(tax_base<MMA, MMA*PSD, tax_base*PSD), 43*VDU*PSD)
-        neto <-bruto - gpm - sodra - psd
+        PII <- 0.03*tax_base
+        neto <-bruto - gpm - sodra - psd-PII
         list(bruto=x, 
              new_bruto_2019_k=bruto, 
              gpm_2019_k = gpm, 
-             sodra_2019_k = sodra,
+             sodra_2019_k = sodra+PII,
              psd_2019_k=psd,
-             VSD_2019_k=sodra+psd,
+             VSD_2019_k=sodra+psd+PII,
              tax_credit_2019_k=tax_credit,
              neto_2019_k = neto, 
-             ITR_2019_k=(sodra+psd+gpm)/bruto, 
-             tax_2019_k=sodra+psd+gpm)
+             ITR_2019_k=(sodra+psd+gpm+PII)/bruto, 
+             tax_2019_k=sodra+psd+gpm+PII)
 }
 
 
@@ -115,7 +116,7 @@ df <- data.frame(
         gather(var, values,2:5)
 
 
-#jpeg("./figures/IV_ITR_new.jpeg", width = 9, height = 5, units = 'in', res = 100)
+jpeg("./figures/IV_ITR_new.jpeg", width = 9, height = 5, units = 'in', res = 100)
 ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,200000, by=10000))+
@@ -126,8 +127,7 @@ ggplot(data=df, aes(x=bruto,y=values, color=var))+
               legend.title=element_blank(),
               axis.text.x = element_text(angle=90, hjust=1))+
         labs(title="individualios veiklos mokestinė dalis procentais nuo visų gautų pajamų (angl.: \"Imputed Tax Rate - ITR\")",
-                subtitle= "Lithuanian-Economy.net",
-                x="Pajamos 2018m.",
-                y="ITR")
-#dev.off()
-
+             subtitle= "Lithuanian-Economy.net",
+             x="Pajamos 2018m.",
+             y="ITR")
+dev.off()
