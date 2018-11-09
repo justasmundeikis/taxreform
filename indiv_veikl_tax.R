@@ -12,11 +12,13 @@ f_2018 <- function(x) {
         SODRA <- 0.289
         PSD <- 0.09
         bruto <- x
-        tax_base <- bruto*0.7
-        tax_credit <- pmax(0,ifelse(tax_base<20000, tax_base*0.1, tax_base*(0.1-2/300000*(tax_base-20000))))
-        gpm <- tax_base*0.15-tax_credit
-        sodra <- pmin(ifelse(tax_base<MMA, MMA*SODRA, tax_base*0.5*SODRA), 28*VDU*SODRA)
-        psd <- pmin(ifelse(tax_base<MMA, MMA*PSD, tax_base*0.5*PSD), 28*VDU*PSD)
+        sanaudos <- 0.3
+        tax_base_gpm <- bruto*(1-sanaudos)
+        tax_base_vsd <- tax_base_gpm * 0.5
+        tax_credit <- pmax(0,ifelse(tax_base_gpm<20000, tax_base_gpm*0.1, tax_base_gpm*(0.1-2/300000*(tax_base_gpm-20000))))
+        gpm <- tax_base_gpm*0.15-tax_credit
+        sodra <- pmin(tax_base_vsd*SODRA, 28*VDU*SODRA)
+        psd <- pmin(ifelse(tax_base_vsd<MMA, MMA*PSD, tax_base_vsd*PSD), 28*VDU*PSD)
         neto <-bruto - gpm - sodra - psd
         list(bruto=x, 
              new_bruto_2018=bruto, 
@@ -33,38 +35,43 @@ f_2018 <- function(x) {
 f_2018_k <- function(x) {
         MMA <- 400
         VDU <- 808.7
-        SODRA <- 0.289+0.02
+        SODRA <- 0.289
         PSD <- 0.09
         bruto <- x
-        tax_base <- bruto*0.7
-        tax_credit <- pmax(0,ifelse(tax_base<20000, tax_base*0.1, tax_base*(0.1-2/300000*(tax_base-20000))))
-        gpm <- tax_base*0.15-tax_credit
-        sodra <- pmin(ifelse(tax_base<MMA, MMA*SODRA, tax_base*0.5*SODRA), 28*VDU*SODRA)
-        psd <- pmin(ifelse(tax_base<MMA, MMA*PSD, tax_base*0.5*PSD), 28*VDU*PSD)
-        neto <-bruto - gpm - sodra - psd
+        sanaudos <- 0.3
+        tax_base_gpm <- bruto*(1-sanaudos)
+        tax_base_vsd <- tax_base_gpm * 0.5
+        tax_credit <- pmax(0,ifelse(tax_base_gpm<20000, tax_base_gpm*0.1, tax_base_gpm*(0.1-2/300000*(tax_base_gpm-20000))))
+        gpm <- tax_base_gpm*0.15-tax_credit
+        sodra <- pmin(tax_base_vsd*SODRA, 28*VDU*SODRA)
+        psd <- pmin(ifelse(tax_base_vsd<MMA, MMA*PSD, tax_base_vsd*PSD), 28*VDU*PSD)
+        PII <- 0.02*tax_base_vsd
+        neto <-bruto - gpm - sodra - psd-PII
         list(bruto=x, 
              new_bruto_2018_k=bruto, 
              gpm_2018_k = gpm, 
-             sodra_2018_k = sodra,
+             sodra_2018_k = sodra+PII,
              psd_2018_k=psd,
-             VSD_2018_k=sodra+psd,
+             VSD_2018_k=sodra+psd+PII,
              tax_credit_2018_k=tax_credit,
              neto_2018_k = neto, 
-             ITR_2018_k=(sodra+psd+gpm)/bruto, 
-             tax_2018_k=sodra+psd+gpm)
+             ITR_2018_k=(sodra+psd+gpm+PII)/bruto, 
+             tax_2018_k=sodra+psd+gpm+PII)
 }
 
 f_2019 <- function(x) {
         MMA <- 400*1.289
         VDU <- 808.7*1.289
-        SODRA <- 0.195-0.069
         PSD <- 0.069
+        SODRA <- 0.195-PSD
         bruto <- x
-        tax_base <- bruto*0.7
-        tax_credit <- pmax(0,ifelse(tax_base<20000, tax_base*0.1, tax_base*(0.1-2/300000*(tax_base-20000))))
-        gpm <- tax_base*0.15-tax_credit
-        sodra <- pmin(ifelse(tax_base<MMA, MMA*SODRA, tax_base*SODRA), 43*VDU*SODRA)
-        psd <- pmin(ifelse(tax_base<MMA, MMA*PSD, tax_base*PSD), 43*VDU*PSD)
+        sanaudos <- 0.3
+        tax_base_gpm <- bruto*(1-sanaudos)
+        tax_base_vsd <- tax_base_gpm * 1
+        tax_credit <- pmax(0,ifelse(tax_base_gpm<20000, tax_base_gpm*0.1, tax_base_gpm*(0.1-2/300000*(tax_base_gpm-20000))))
+        gpm <- tax_base_gpm*0.15-tax_credit
+        sodra <- pmin(tax_base_vsd*SODRA, 43*VDU*SODRA)
+        psd <- pmin(ifelse(tax_base_vsd<MMA, MMA*PSD, tax_base_vsd*PSD), 43*VDU*PSD)
         neto <-bruto - gpm - sodra - psd
         list(bruto=x, 
              new_bruto_2019=bruto, 
@@ -80,15 +87,17 @@ f_2019 <- function(x) {
 f_2019_k <- function(x) {
         MMA <- 400*1.289
         VDU <- 808.7*1.289
-        SODRA <- 0.195-0.069
         PSD <- 0.069
+        SODRA <- 0.195-PSD
         bruto <- x
-        tax_base <- bruto*0.7
-        tax_credit <- pmax(0,ifelse(tax_base<20000, tax_base*0.1, tax_base*(0.1-2/300000*(tax_base-20000))))
-        gpm <- tax_base*0.15-tax_credit
-        sodra <- pmin(ifelse(tax_base<MMA, MMA*SODRA, tax_base*SODRA), 43*VDU*SODRA)
-        psd <- pmin(ifelse(tax_base<MMA, MMA*PSD, tax_base*PSD), 43*VDU*PSD)
-        PII <- 0.03*tax_base
+        sanaudos <- 0.3
+        tax_base_gpm <- bruto*(1-sanaudos)
+        tax_base_vsd <- tax_base_gpm * 1
+        tax_credit <- pmax(0,ifelse(tax_base_gpm<20000, tax_base_gpm*0.1, tax_base_gpm*(0.1-2/300000*(tax_base_gpm-20000))))
+        gpm <- tax_base_gpm*0.15-tax_credit
+        sodra <- pmin(tax_base_vsd*SODRA, 43*VDU*SODRA)
+        psd <- pmin(ifelse(tax_base_vsd<MMA, MMA*PSD, tax_base_vsd*PSD), 43*VDU*PSD)
+        PII <- 0.03*tax_base_vsd
         neto <-bruto - gpm - sodra - psd-PII
         list(bruto=x, 
              new_bruto_2019_k=bruto, 
@@ -120,7 +129,7 @@ jpeg("./figures/IV_ITR_new.jpeg", width = 9, height = 5, units = 'in', res = 100
 ggplot(data=df, aes(x=bruto,y=values, color=var))+
         geom_line()+
         scale_x_continuous(breaks = seq(0,200000, by=10000))+
-        scale_y_continuous(breaks = seq(0,.8, by=0.02))+
+        scale_y_continuous(breaks = seq(0,.8, by=0.01))+
         scale_color_brewer(palette="Set1")+
         theme(plot.title = element_text(hjust = 0.0, face="bold"))+
         theme(legend.position = "bottom",
@@ -131,4 +140,3 @@ ggplot(data=df, aes(x=bruto,y=values, color=var))+
              x="Pajamos 2018m.",
              y="ITR")
 dev.off()
-
